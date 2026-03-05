@@ -1,5 +1,5 @@
 import streamlit as st
-import logic
+from files import logic
 
 with st.container(border=True):
     col1, col2 = st.columns(2)

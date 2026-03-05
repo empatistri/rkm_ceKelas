@@ -4,7 +4,7 @@ import os
 import streamlit as st
 
 #folder db.users
-DB_NAME = "files/users.db"
+DB_NAME = "files/datas/users.db"
 
 #hash password
 def hash_password(password: str, salt: str = None) -> tuple[str, str]:
