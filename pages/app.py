@@ -1,91 +1,75 @@
 import streamlit as st
 from datetime import datetime
+import sqlite3
+import os
 
-st.set_page_config(
-    page_title="ceKelas v.1",
-    page_icon="images/ruriSinaga.jpeg",
-    layout="wide"
-)
+import streamlit as st
+from datetime import datetime
+import sqlite3
+import os
 
 # =====================
-# DATA JADWAL GEDUNG S
+# DATABASE SETUP
 # =====================
-data_kelas = [
-    {
-        "nama_kelas": "3S.1",
-        "jadwal": [
-            {"prodi_matkul": "Perpustakaan - Literasi Informasi", "mulai": "08.00", "selesai": "10.00"},
-            {"prodi_matkul": "Teknik Informatika - Basis Data",   "mulai": "13.00", "selesai": "14.50"},
-        ]
-    },
-    {
-        "nama_kelas": "3S.2",
-        "jadwal": [
-            {"prodi_matkul": "Sistem Informasi - Pemrograman Web", "mulai": "10.00", "selesai": "11.50"},
-        ]
-    },
-    {
-        "nama_kelas": "3S.3",
-        "jadwal": [
-            {"prodi_matkul": "Teknik Informatika - Jaringan Komputer", "mulai": "07.30", "selesai": "09.20"},
-            {"prodi_matkul": "Manajemen - Perilaku Organisasi",        "mulai": "11.00", "selesai": "12.50"},
-        ]
-    },
-    {"nama_kelas": "3S.4",  "jadwal": []},
-    {
-        "nama_kelas": "3S.5",
-        "jadwal": [
-            {"prodi_matkul": "Akuntansi - Perpajakan", "mulai": "14.00", "selesai": "15.50"},
-        ]
-    },
-    {
-        "nama_kelas": "3S.6",
-        "jadwal": [
-            {"prodi_matkul": "Hukum - Hukum Tata Negara", "mulai": "09.00", "selesai": "10.50"},
-        ]
-    },
-    {
-        "nama_kelas": "3S.7",
-        "jadwal": [
-            {"prodi_matkul": "Sistem Informasi - Analisis Data",  "mulai": "08.00", "selesai": "09.50"},
-            {"prodi_matkul": "Perpustakaan - Literasi Informasi", "mulai": "12.30", "selesai": "14.20"},
-        ]
-    },
-    {"nama_kelas": "3S.8",  "jadwal": []},
-    {
-        "nama_kelas": "3S.9",
-        "jadwal": [
-            {"prodi_matkul": "Teknik Informatika - Basis Data", "mulai": "10.00", "selesai": "11.50"},
-        ]
-    },
-    {
-        "nama_kelas": "3S.10",
-        "jadwal": [
-            {"prodi_matkul": "Manajemen - Kewirausahaan", "mulai": "13.00", "selesai": "14.50"},
-        ]
-    },
-    {"nama_kelas": "3S.11", "jadwal": []},
-    {
-        "nama_kelas": "3S.12",
-        "jadwal": [
-            {"prodi_matkul": "Hukum - Hukum Perdata",  "mulai": "07.30", "selesai": "09.20"},
-            {"prodi_matkul": "Akuntansi - Audit Dasar", "mulai": "15.00", "selesai": "16.50"},
-        ]
-    },
-    {
-        "nama_kelas": "3S.13",
-        "jadwal": [
-            {"prodi_matkul": "Sistem Informasi - Pemrograman Mobile", "mulai": "09.00", "selesai": "10.50"},
-        ]
-    },
-    {"nama_kelas": "3S.14", "jadwal": []},
-    {
-        "nama_kelas": "3S.15",
-        "jadwal": [
-            {"prodi_matkul": "Teknik Informatika - Kecerdasan Buatan", "mulai": "11.00", "selesai": "12.50"},
-        ]
-    },
-]
+DB_PATH = "files/datas/cekelas.db"
+
+def init_db():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    # Tabel kelas
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS kelas (
+            id INTEGER PRIMARY KEY,
+            nama TEXT UNIQUE
+        )
+    ''')
+    
+    # Tabel jadwal
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS jadwal (
+            id INTEGER PRIMARY KEY,
+            kelas_id INTEGER,
+            prodi_matkul TEXT,
+            mulai TEXT,
+            selesai TEXT,
+            FOREIGN KEY(kelas_id) REFERENCES kelas(id)
+        )
+    ''')
+    
+    conn.commit()
+    conn.close()
+
+def load_data_from_db():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT k.nama, j.prodi_matkul, j.mulai, j.selesai FROM kelas k LEFT JOIN jadwal j ON k.id = j.kelas_id ORDER BY k.nama, j.mulai")
+    rows = cursor.fetchall()
+    conn.close()
+    
+    data_kelas = {}
+    for row in rows:
+        nama_kelas, prodi_matkul, mulai, selesai = row
+        if nama_kelas not in data_kelas:
+            data_kelas[nama_kelas] = []
+        if prodi_matkul:  # jika ada jadwal
+            data_kelas[nama_kelas].append({
+                "prodi_matkul": prodi_matkul,
+                "mulai": mulai,
+                "selesai": selesai
+            })
+    
+    # Konversi ke list of dict seperti sebelumnya
+    return [{"nama_kelas": nama, "jadwal": jadwal} for nama, jadwal in data_kelas.items()]
+
+# Inisialisasi DB jika belum ada
+# if not os.path.exists(DB_PATH):
+#     init_db()
+#     insert_initial_data()
+
+# Load data dari DB
+data_kelas = load_data_from_db()
 
 # =====================
 # HELPER FUNCTIONS
@@ -185,7 +169,7 @@ def tampilkan_detail(kelas):
         selesai  = str_ke_menit(aktif["selesai"])
         sisa     = selesai - sekarang_menit
 
-        st.markdown(f"**Status saat ini:** 🔴 Sedang Terpakai")
+        st.markdown(f"**Status saat ini:** 🔴 Sedang Dipake")
         st.markdown(f"**Digunakan oleh:** {aktif['prodi_matkul']}")
         st.markdown(f"**Waktu:** {aktif['mulai']} – {aktif['selesai']}")
         st.info(f"⏳ Sisa waktu pemakaian: **{durasi_label(sisa)}** lagi")
@@ -369,7 +353,7 @@ st.markdown(f"""
     </div>
     <div class="stat-card pakai">
         <div class="stat-number">{terpakai}</div>
-        <div class="stat-label">Sedang Terpakai</div>
+        <div class="stat-label">Sedang Dipake</div>
     </div>
     <div class="stat-card kosong">
         <div class="stat-number">{kosong}</div>
@@ -393,7 +377,7 @@ with col_f1:
         st.session_state.halaman = 1
         st.rerun()
 with col_f2:
-    if st.button("🔴 Terpakai", use_container_width=True,
+    if st.button("🔴 Dipake", use_container_width=True,
                  type="primary" if st.session_state.filter_status == "terpakai" else "secondary"):
         st.session_state.filter_status = "terpakai"
         st.session_state.halaman = 1
@@ -449,7 +433,7 @@ else:
                 <div class="kelas-card terpakai">
                     <div class="card-top">
                         <div class="room-name">{kelas['nama_kelas']}</div>
-                        <div class="badge terpakai">🔴 Terpakai</div>
+                        <div class="badge terpakai">🔴 Dipake</div>
                     </div>
                     <div class="card-bottom">
                         <div class="info-row">
