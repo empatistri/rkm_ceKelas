@@ -1,5 +1,6 @@
 import streamlit as st
 from datetime import datetime
+import pytz
 import sqlite3
 import os
 
@@ -16,27 +17,6 @@ DB_PATH = "files/datas/cekelas.db"
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    
-    # Tabel kelas
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS kelas (
-            id INTEGER PRIMARY KEY,
-            nama TEXT UNIQUE
-        )
-    ''')
-    
-    # Tabel jadwal
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS jadwal (
-            id INTEGER PRIMARY KEY,
-            kelas_id INTEGER,
-            prodi_matkul TEXT,
-            mulai TEXT,
-            selesai TEXT,
-            FOREIGN KEY(kelas_id) REFERENCES kelas(id)
-        )
-    ''')
-    
     conn.commit()
     conn.close()
 
@@ -62,11 +42,6 @@ def load_data_from_db():
     
     # Konversi ke list of dict seperti sebelumnya
     return [{"nama_kelas": nama, "jadwal": jadwal} for nama, jadwal in data_kelas.items()]
-
-# Inisialisasi DB jika belum ada
-# if not os.path.exists(DB_PATH):
-#     init_db()
-#     insert_initial_data()
 
 # Load data dari DB
 data_kelas = load_data_from_db()
@@ -120,7 +95,8 @@ HARI_ID  = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
 BULAN_ID = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni",
             "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
 
-now            = datetime.now()
+tz             = pytz.timezone("Asia/Jakarta")
+now            = datetime.now(tz)
 hari           = HARI_ID[now.weekday()]
 tgl            = f"{now.day} {BULAN_ID[now.month]} {now.year}"
 jam            = now.strftime("%H:%M")
