@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+* { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+.header-box {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 55%, #0f3460 100%);
+    border-radius: 16px; padding: 22px 32px; margin-bottom: 22px;
+    color: white; display: flex; justify-content: space-between; align-items: center;
+}
+.header-brand { display: flex; align-items: center; gap: 16px; }
+.logo-circle {
+    width: 54px; height: 54px; border-radius: 14px;
+    background: linear-gradient(135deg, #4f8ef7, #a259f7);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; flex-shrink: 0; box-shadow: 0 4px 14px rgba(79,142,247,0.4);
+}
+.brand-name { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; line-height: 1; margin-bottom: 6px; }
+.brand-name span { color: #4f8ef7; }
+.brand-sub  { font-size: 12px; opacity: 0.55; line-height: 1.5; }
+.header-right { text-align: right; }
+.header-jam   { font-size: 30px; font-weight: 700; line-height: 1; letter-spacing: -1px; }
+.header-tgl   { font-size: 12px; opacity: 0.6; margin-top: 5px; }
+
+.stat-row { display: flex; gap: 14px; margin-bottom: 20px; }
+.stat-card { flex: 1; border-radius: 12px; padding: 18px 22px; color: white; }
+.stat-card.total  { background: #2d3561; }
+.stat-card.pakai  { background: #c0392b; }
+.stat-card.kosong { background: #1e8449; }
+.stat-number { font-size: 32px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+.stat-label  { font-size: 12px; opacity: 0.8; }
+
+.section-label {
+    font-size: 12px; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; color: #999; margin-bottom: 12px;
+}
+
+/* wrapper kartu — posisi relative agar tombol bisa overlap */
+.card-wrapper {
+    position: relative;
+    margin-bottom: 14px;
+}
+.kelas-card {
+    border-radius: 14px 14px 0px 0px; 
+    padding: 18px 20px;
+    height: 140px; display: flex; flex-direction: column;
+    justify-content: space-between; overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.kelas-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.10);
+}
+.kelas-card.terpakai { background: #fff5f5; border: 1.5px solid #f5c6c6; }
+.kelas-card.kosong   { background: #f0fff4; border: 1.5px solid #b7e4c7; }
+
+.card-top { display: flex; align-items: center; justify-content: space-between; }
+.room-name { font-size: 22px; font-weight: 700; color: #1a1a2e; line-height: 1; }
+
+.badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+.badge.terpakai { background: #fde8e8; color: #c0392b; }
+.badge.kosong   { background: #d5f5e3; color: #1e8449; }
+
+.info-row {
+    display: flex; align-items: flex-start; gap: 6px;
+    font-size: 12px; color: #555; line-height: 1.4; margin-bottom: 3px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.info-icon { flex-shrink: 0; }
+.info-text  { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.available-text { font-size: 13px; color: #27ae60; font-weight: 500; }
+
+.tap-hint {
+    font-size: 11px; color: #aaa; text-align: right;
+    margin-top: -10px; margin-bottom: 4px;
+}
+
+/* sembunyikan border default tombol Streamlit agar tombol invisible */
+div[data-testid="stButton"] button[kind="tertiary"] {
+    background: transparent !important;
+    border: none !important;
+    color: transparent !important;
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    cursor: pointer;
+    z-index: 10;
+}
