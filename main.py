@@ -6,7 +6,7 @@ with st.container(border=True):
 
     with col1:
         st.title("ceKelas.1")
-
+        st.badge("Kredensial Juri, username: dwi ; Password: 12345")
         #login logic
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
@@ -17,7 +17,7 @@ with st.container(border=True):
             else:
                 st.error("Username atau password salah!")
 
-        # #register logic
+        # #register logic masih tahap pengembangan
         # usernameReg = st.text_input("Username", key="userReg")
         # passwordReg = st.text_input("Password", key=userPassReg)
 
